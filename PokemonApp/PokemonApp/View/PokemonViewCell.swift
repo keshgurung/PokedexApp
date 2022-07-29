@@ -8,14 +8,26 @@
 import UIKit
 
 class PokemonViewCell: UITableViewCell {
+    
 
     static let reuseID = "\(PokemonViewCell.self)"
+    
+    var pokemonData : PokemonData?
+    
+    var allPokemon: [PokemonData] = []
+
+     var pagesUrl: results?
+
+    let network: NetworkManager = NetworkManager()
+    
+    var indexPath: Int = 0
+    
     
     lazy var newImageView: UIImageView = {
         let imageView = UIImageView(frame: .zero)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
-        imageView.backgroundColor = .systemRed
+        imageView.backgroundColor = .white
         imageView.image = UIImage(named: "pp")
         imageView.heightAnchor.constraint(equalToConstant: 150).isActive = true
         imageView.widthAnchor.constraint(equalToConstant: 150).isActive = true
@@ -29,7 +41,7 @@ class PokemonViewCell: UITableViewCell {
         label.text = "kesh"
         label.setContentHuggingPriority(.required, for: .vertical)
         label.setContentCompressionResistancePriority(.required, for: .vertical)
-        label.backgroundColor = .systemPink
+        label.backgroundColor = .systemPurple
         return label
     }()
     
@@ -38,8 +50,6 @@ class PokemonViewCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         label.text = "puff /puff"
-//        label.setContentHuggingPriority(.defaultLow, for: .vertical)
-//        label.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         label.backgroundColor = .systemOrange
         return label
     }()
@@ -68,12 +78,69 @@ class PokemonViewCell: UITableViewCell {
         
         hStack.bindToSuperView()
     }
-    
-    
-//    func configure(page: ){
-//        self.newImageView =
-//        self.nameLabel.text =  page.name
-//        self.typeLabel =
-//    }
 
+    private func requestData(){
+        self.network.fetchPokeData(urlStr: pagesUrl?.url ?? "" ) { result in
+                switch result {
+                case .success(let data):
+                   
+                    self.allPokemon.append(data)
+                    
+                    var pokeTypes: [String] = []
+                   
+                    
+                    for var i in 0..<data.types.count {
+                        pokeTypes.append(data.types[i].type.name)
+                        i += 1
+                    }
+                    
+                    DispatchQueue.main.async {
+                        self.nameLabel.text =  " # \(self.indexPath + 1)  \(data.name)"
+                        
+                        self.typeLabel.text = pokeTypes.joined(separator: ",")
+                        
+                        
+                        if let imageData = ImageCache.shared.getImageData(key: data.sprites.other.home.frontDefault) {
+                            print("Image found in cache")
+                            self.newImageView.image = UIImage(data: imageData)
+                            return
+                        }
+                        
+                        self.network.fetchImage(urlStr: data.sprites.other.home.frontDefault) { result in
+                        switch result{
+                        case .success(let imgData):
+                            DispatchQueue.main.async {
+                                print("img pld frm ntwrk \(data.name)")
+                                ImageCache.shared.setImageData(data: imgData, key: data.sprites.other.home.frontDefault)
+                                
+//                                if self.pagesUrl?.url == (self. ?? "") {
+                                    self.newImageView.image = UIImage(data: imgData)
+//                                }
+                                  
+
+                            }
+                        case .failure(let error):
+                            print(error)
+                        }
+                    }
+                        
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
+    }
+    
+    func configure(pagesUrl: results, indexPath: Int, network: NetworkManager ){
+        
+        self.pagesUrl =  pagesUrl
+        self.indexPath = indexPath
+        requestData()
+      
+    }
+    override func prepareForReuse() {
+        self.nameLabel.text = " name title"
+        self.typeLabel.text = " type title"
+        self.newImageView.image = UIImage(named: "pp")
+    }
 }

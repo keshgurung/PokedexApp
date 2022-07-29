@@ -9,6 +9,7 @@ import Foundation
 
 struct PokemonData: Decodable {
     let name: String
+    let id: Int
     let abilities: [Ability]
     let sprites : Sprites
     let types: [PokeType]

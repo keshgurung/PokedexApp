@@ -13,10 +13,18 @@ class ViewController: UIViewController {
 //    it gives 15 data at once.. so to call 150 we make final count to (151-15 = 136)
     let totalData: Int = 136
     var currentData: Int = 0
-    var indexKeying: [IndexPath: String] = [:]
-    var visibleIndexPath = Set<IndexPath>()
+    
+    var pokemon: PokemonData?
+    
     let network: NetworkManager = NetworkManager()
  
+    
+    var pokemonData : PokemonData?
+    
+    var allPokemon: [PokemonData] = []
+    
+//    var Pokemon: [Int : PokemonData]?
+
     
     lazy var pokeTable: UITableView = {
         let table = UITableView(frame: .zero)
@@ -49,7 +57,7 @@ class ViewController: UIViewController {
         self.network.fetchPage(urlStr : "https://pokeapi.co/api/v2/pokemon?offset=\(self.currentData)&limit=30"){ result in
             switch result {
             case .success(let page):
-                print(page)
+               
                 self.currentData += 30
                 
                 self.pagesUrl.append(contentsOf: page.results)
@@ -63,13 +71,13 @@ class ViewController: UIViewController {
         }
       
     }
-   
+    
+ 
 }
 
 extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(self.pagesUrl.count)
         return self.pagesUrl.count
         
     }
@@ -79,31 +87,75 @@ extension ViewController: UITableViewDataSource {
           
             return UITableViewCell()
         }
-//        cell.delegate = self
-        cell.configure(pagesUrl: self.pagesUrl[indexPath.row], indexPath: indexPath.row, network: self.network)
- 
-        return cell
         
+        self.network.fetchPokeData( urlStr: self.pagesUrl[indexPath.row].url) { result in
+                        switch result {
+                        case .success(let data):
+//                            group.enter()
+                            DispatchQueue.main.async {
+                                self.allPokemon.append(data)
+                                print(self.allPokemon)
+                            }
+                    
+                            DispatchQueue.main.async {
+                                
+                            var pokeTypes: [String] = []
+        
+                            for var i in 0..<data.types.count {
+                                pokeTypes.append(data.types[i].type.name)
+                                i += 1
+                              }
+                                cell.nameLabel.text =  " # \(indexPath.row + 1)  \(data.name)"
+        
+                                cell.typeLabel.text = pokeTypes.joined(separator: ",")
+        
+        
+                                if let imageData = ImageCache.shared.getImageData(key: data.sprites.other.home.frontDefault) {
+                                    print("Image found in cache")
+                                    cell.newImageView.image = UIImage(data: imageData)
+                                    return
+                                }
+        
+                                self.network.fetchImage(urlStr: data.sprites.other.home.frontDefault) { result in
+                                switch result{
+                                case .success(let imgData):
+                                    DispatchQueue.main.async {
+                                        print("img pld frm ntwrk \(data.name)")
+                                        ImageCache.shared.setImageData(data: imgData, key: data.sprites.other.home.frontDefault)
+        
+//                                        if indexPath.row == data.id {
+                                            cell.newImageView.image = UIImage(data: imgData)
+//                                        }
+        
+        
+                                    }
+                                    
+                                case .failure(let error):
+                                    print(error)
+                                }
+                            }
+        
+                            }
+//                            })
+                        case .failure(let error):
+                            print(error)
+                           
+                        }
+                    
+                }
+        return cell
     }
+    
 }
+
 
 extension ViewController: UITableViewDelegate {
     
-    
-    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        self.visibleIndexPath.remove(indexPath)
-    }
-    
-    
-    
         func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            let detailVC = DetailViewController(pagesUrl: pagesUrl[indexPath.row])
+            let detailVC = DetailViewController(allPokemon: allPokemon[indexPath.row])
             self.navigationController?.pushViewController(detailVC, animated: true)
         }
-    
-    
 }
-
 
 extension ViewController: UITableViewDataSourcePrefetching {
 

@@ -22,6 +22,7 @@
 		20B23A3528856CF200E93E82 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B23A3428856CF200E93E82 /* DetailViewController.swift */; };
 		20B23A372885AD2200E93E82 /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B23A362885AD2200E93E82 /* UIViewControllerExtension.swift */; };
 		20B23A39288608AC00E93E82 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B23A38288608AC00E93E82 /* ImageCache.swift */; };
+		20BC0D4C288AD1530091A588 /* DynamicLabelSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20BC0D4B288AD1530091A588 /* DynamicLabelSize.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 		20B23A3428856CF200E93E82 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		20B23A362885AD2200E93E82 /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
 		20B23A38288608AC00E93E82 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		20BC0D4B288AD1530091A588 /* DynamicLabelSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicLabelSize.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +112,7 @@
 			children = (
 				20B23A282881856700E93E82 /* PokemonViewCell.swift */,
 				20B23A102880520900E93E82 /* Main.storyboard */,
+				20BC0D4B288AD1530091A588 /* DynamicLabelSize.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -219,6 +222,7 @@
 				20B23A2F288221B600E93E82 /* PokemonPage.swift in Sources */,
 				20B23A242880539B00E93E82 /* NetworkManager.swift in Sources */,
 				20B23A0F2880520900E93E82 /* ViewController.swift in Sources */,
+				20BC0D4C288AD1530091A588 /* DynamicLabelSize.swift in Sources */,
 				20B23A0B2880520900E93E82 /* AppDelegate.swift in Sources */,
 				20B23A0D2880520900E93E82 /* SceneDelegate.swift in Sources */,
 				20B23A372885AD2200E93E82 /* UIViewControllerExtension.swift in Sources */,
